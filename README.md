@@ -9,3 +9,4 @@ pip install google-api-python-client google-auth-httplib2 google-auth-oauthlib
 # Referências para API Google
 
 [API do Google Calendar](https://developers.google.com/calendar/quickstart/python)
+[Referência eventos do Google Calendar](https://developers.google.com/calendar/v3/reference/events)
