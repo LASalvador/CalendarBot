@@ -7,7 +7,7 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 
 # If modifying these scopes, delete the file token.pickle.
-SCOPES2 = ['https://www.googleapis.com/auth/calendar.events']
+SCOPES2 = ['https://www.googleapis.com/auth/calendar']
 
 def listaEventos():
     """Shows basic usage of the Google Calendar API.
@@ -28,7 +28,7 @@ def listaEventos():
         print('No upcoming events found.')
     for event in events:
         start = event['start'].get('dateTime', event['start'].get('date'))
-        print(start, event['id'])
+        print(start, event['summary'])
 
 
 def criaEvento():
@@ -67,8 +67,38 @@ def criaEvento():
     link = event.get('htmlLink')
     print(f'Event created: {link}')
 
-def deletarArquivos():
-    return 0
+def alterarEvento():
+    service = configurarCred()
+    events = service.events().list(calendarId='primary').execute()
+    for event in events['items']:
+        if event['summary'] == "Google I/O 2015":
+            eventoId = event['id']
+
+    event = service.events().get(calendarId='primary', eventId=eventoId).execute()
+
+    event['summary'] = 'Mudei essa porra'
+    
+    updated_event = service.events().update(calendarId='primary', eventId=event['id'], body=event).execute()
+    print(updated_event['updated'])
+
+def deletarEvento():
+    
+    service = configurarCred()
+
+    events = service.events().list(calendarId='primary').execute()
+    for event in events['items']:
+        if event['summary'] == "Google I/O 2015":
+            eventoId = event['id']
+    service.events().delete(calendarId='primary', eventId=eventoId).execute()
+    return None        
+def selecionarUmEvento():
+    service = configurarCred()
+    events = service.events().list(calendarId='primary').execute()
+    for event in events['items']:
+        if event['summary'] == "Trabalho de estrutura de dados":
+            print(event)
+
+    
 
 def configurarCred():
     creds = None
@@ -92,15 +122,4 @@ def configurarCred():
     service = build('calendar', 'v3', credentials=creds)
     return service
 
-def acharEvento():
-    
-    service = configurarCred()
 
-    events = service.events().list(calendarId='primary').execute()
-    for event in events['items']:
-        if event['summary'] == "Google I/O 2015":
-            eventoId = event['id']
-    print(eventoId)
-    input()
-    service.events().delete(calendarId='primary', eventId=eventoId).execute()
-    return None
