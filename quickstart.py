@@ -67,30 +67,33 @@ def criaEvento():
     link = event.get('htmlLink')
     print(f'Event created: {link}')
 
-def alterarEvento():
+def alterarEvento(EventName, newName='', newDay='', newStart='', newEnd=''):
     service = configurarCred()
     events = service.events().list(calendarId='primary').execute()
     for event in events['items']:
-        if event['summary'] == "Google I/O 2015":
+        if event['summary'] == EventName:
             eventoId = event['id']
 
     event = service.events().get(calendarId='primary', eventId=eventoId).execute()
 
-    event['summary'] = 'Mudei essa porra'
+    if len(newName):
+        event['summary'] = newName
+        
     
     updated_event = service.events().update(calendarId='primary', eventId=event['id'], body=event).execute()
     print(updated_event['updated'])
 
-def deletarEvento():
+def deletarEvento(EventName):
     
     service = configurarCred()
 
     events = service.events().list(calendarId='primary').execute()
     for event in events['items']:
-        if event['summary'] == "Google I/O 2015":
+        if event['summary'] == EventName:
             eventoId = event['id']
     service.events().delete(calendarId='primary', eventId=eventoId).execute()
-    return None        
+    return None
+
 def selecionarUmEvento():
     service = configurarCred()
     events = service.events().list(calendarId='primary').execute()
@@ -122,4 +125,5 @@ def configurarCred():
     service = build('calendar', 'v3', credentials=creds)
     return service
 
-
+#from datetime import datetime
+#b = datetime(2017, 11, 28, 23, 55, 59, 342380)
