@@ -10,11 +10,7 @@ from google.auth.transport.requests import Request
 SCOPES2 = ['https://www.googleapis.com/auth/calendar']
 
 def listaEventos():
-    """Shows basic usage of the Google Calendar API.
-    Prints the start and name of the next 10 events on the user's calendar.
-    """
-    print('[main - INICIO]')
-
+    #Configurando crediciais
     service = configurarCred()
     # Call the Calendar API
     now = datetime.datetime.utcnow().isoformat() + 'Z' # 'Z' indicates UTC time
@@ -37,8 +33,6 @@ def criaEvento():
 
     event = {
       'summary': 'Google I/O 2015',
-      'location': '800 Howard St., San Francisco, CA 94103',
-      'description': 'A chance to hear more about Google\'s developer products.',
       'start': {
         'dateTime': '2015-05-28T09:00:00-07:00',
         'timeZone': 'America/Los_Angeles',
@@ -47,18 +41,11 @@ def criaEvento():
         'dateTime': '2015-05-28T17:00:00-07:00',
         'timeZone': 'America/Los_Angeles',
       },
-      'recurrence': [
-        'RRULE:FREQ=DAILY;COUNT=2'
-      ],
-      'attendees': [
-        {'email': 'lpage@example.com'},
-        {'email': 'sbrin@example.com'},
-      ],
       'reminders': {
         'useDefault': False,
         'overrides': [
           {'method': 'email', 'minutes': 24 * 60},
-          {'method': 'popup', 'minutes': 10},
+          {'method': 'popup', 'minutes': 30},
         ],
       },
     }
@@ -94,13 +81,13 @@ def deletarEvento(EventName):
     service.events().delete(calendarId='primary', eventId=eventoId).execute()
     return None
 
-def selecionarUmEvento():
+def selecionarUmEvento(EventName):
     service = configurarCred()
     events = service.events().list(calendarId='primary').execute()
     for event in events['items']:
-        if event['summary'] == "Trabalho de estrutura de dados":
-            print(event)
-
+        if event['summary'] == EventName:
+            return event
+    return None
     
 
 def configurarCred():
@@ -125,5 +112,8 @@ def configurarCred():
     service = build('calendar', 'v3', credentials=creds)
     return service
 
-#from datetime import datetime
+#import datetime
 #b = datetime(2017, 11, 28, 23, 55, 59, 342380)
+#now = datetime.datetime.utcnow().isoformat()   
+
+#c = datetime(2017, 11, 28, 23, 55, 59, 342380).utcnow().isoformat()
