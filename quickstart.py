@@ -8,10 +8,11 @@ from google.auth.transport.requests import Request
 
 # If modifying these scopes, delete the file token.pickle.
 SCOPES2 = ['https://www.googleapis.com/auth/calendar']
+SCOPES1 = ['https://www.googleapis.com/auth/calendar.events']
 
 def listaEventos():
     #Configurando crediciais
-    service = configurarCred()
+    service = configurarCred(SCOPES2)
     # Call the Calendar API
     now = datetime.datetime.utcnow().isoformat() + 'Z' # 'Z' indicates UTC time
     print('Getting the upcoming 10 events')
@@ -27,19 +28,22 @@ def listaEventos():
         print(start, event['summary'])
 
 
-def criaEvento():
+def criaEvento(eventName, year , month , day, hourStart, minutesStart, hourEnd, minutesEnd):
+
+    dateStart = datetime.datetime(year, month, day, hourStart, minutesStart).isoformat()
+    dateEnd = datetime.datetime(year, month, day, hourEnd, minutesEnd).isoformat()
     
-    service = configurarCred()
+    service = configurarCred(SCOPES1)
 
     event = {
-      'summary': 'Google I/O 2015',
+      'summary': eventName,
       'start': {
-        'dateTime': '2015-05-28T09:00:00-07:00',
-        'timeZone': 'America/Los_Angeles',
+        'dateTime': dateStart,
+        'timeZone': 'America/Sao_Paulo',
       },
       'end': {
-        'dateTime': '2015-05-28T17:00:00-07:00',
-        'timeZone': 'America/Los_Angeles',
+        'dateTime': dateEnd,
+        'timeZone': 'America/Sao_Paulo',
       },
       'reminders': {
         'useDefault': False,
@@ -51,46 +55,52 @@ def criaEvento():
     }
 
     event = service.events().insert(calendarId='primary', body=event).execute()
-    link = event.get('htmlLink')
-    print(f'Event created: {link}')
+    return event.get('htmlLink')
+    
 
-def alterarEvento(EventName, newName='', newDay='', newStart='', newEnd=''):
-    service = configurarCred()
+def alterarEvento(eventName, newName='', newYear='' , newMonth='' , newDay='', newHourStart='', newMinutesStart='', newHourEnd='', newMinutesEnd=''):
+    if (not len(eventName)):
+        return 0
+    
+    service = configurarCred(SCOPES2)
     events = service.events().list(calendarId='primary').execute()
     for event in events['items']:
-        if event['summary'] == EventName:
+        if event['summary'] == eventName:
             eventoId = event['id']
 
     event = service.events().get(calendarId='primary', eventId=eventoId).execute()
 
-    if len(newName):
-        event['summary'] = newName
-        
-    
-    updated_event = service.events().update(calendarId='primary', eventId=event['id'], body=event).execute()
-    print(updated_event['updated'])
+    event['summary'] = newName
+    if (len(newDay) !=0 and len(newYear) !=0 and len(newMonth) !=0):
+        dateStart = datetime.datetime(newYear, newMonth, newDay, newHourStart, newMinutesStart).isoformat()
+        event['start']['dateTime'] = dateStart
+        dateEnd = datetime.datetime(newYear, newMonth, newDay, newHourEnd, newMinutesEnd).isoformat()
+        event['end']['dateTime'] = dateEnd
 
-def deletarEvento(EventName):
+    updated_event = service.events().update(calendarId='primary', eventId=event['id'], body=event).execute()
+    return updated_event.get('htmlLink')
+
+def deletarEvento(eventName):
     
-    service = configurarCred()
+    service = configurarCred(SCOPES1)
 
     events = service.events().list(calendarId='primary').execute()
     for event in events['items']:
-        if event['summary'] == EventName:
+        if event['summary'] == eventName:
             eventoId = event['id']
     service.events().delete(calendarId='primary', eventId=eventoId).execute()
     return None
 
-def selecionarUmEvento(EventName):
-    service = configurarCred()
+def selecionarUmEvento(eventName):
+    service = configurarCred(SCOPES2)
     events = service.events().list(calendarId='primary').execute()
     for event in events['items']:
-        if event['summary'] == EventName:
+        if event['summary'] == eventName:
             return event
     return None
     
 
-def configurarCred():
+def configurarCred(scope):
     creds = None
     # The file token.pickle stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
@@ -104,7 +114,7 @@ def configurarCred():
             creds.refresh(Request())
         else:
             flow = InstalledAppFlow.from_client_secrets_file(
-                'credentials.json', SCOPES2)
+                'credentials.json', scope)
             creds = flow.run_local_server()
         # Save the credentials for the next run
         with open('token.pickle', 'wb') as token:
@@ -113,7 +123,5 @@ def configurarCred():
     return service
 
 #import datetime
-#b = datetime(2017, 11, 28, 23, 55, 59, 342380)
-#now = datetime.datetime.utcnow().isoformat()   
-
-#c = datetime(2017, 11, 28, 23, 55, 59, 342380).utcnow().isoformat()
+#b = datetimee.datetime(2017, 11, 28, 23, 55, 59, 342380)
+#data = b.isoformat()   
