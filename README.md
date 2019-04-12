@@ -6,6 +6,8 @@ rode o comando abaixo para instalar as bibliotecas da google
 
 pip install google-api-python-client google-auth-httplib2 google-auth-oauthlib
 
+pip install python-telegram-bot 
+
 # Referências para API Google
 
 [API do Google Calendar](https://developers.google.com/calendar/quickstart/python)
