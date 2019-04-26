@@ -1,29 +1,43 @@
 import telegram
-import telebot
 
-botMensagem = telebot.TeleBot('625881619:AAFkDG8Fw8btJxVzWyz-GCru3nrT7gXYvfc')
+from telegram.ext import Updater, CommandHandler
 
 def echo(bot, chat, mensagem):
     bot.sendMessage(chat_id=chat, text = mensagem)
 
 bot = telegram.Bot(token = '625881619:AAFkDG8Fw8btJxVzWyz-GCru3nrT7gXYvfc')
-echo(bot, '798821507', 'Olá Lucas, o que deseja fazer: \n 1 - Consultar eventos \n 2 - Editar eventos\n 3 - Apagar eventos\n 4 - Criar eventos')
+echo(bot, '798821507', 'Ola Lucas, o que deseja fazer: \n 1 - Consultar eventos \n 2 - Editar eventos\n 3 - Apagar eventos\n 4 - Criar eventos')
 
-@botMensagem.message_handler(func=lambda m: True)
+# @botMensagem.message_handler(func=lambda m: True)
 
-def escuta(message):
-        if message.text == '1':
-            echo(bot, '798821507', 'Nome do evento que deseja consultar:\n')
-            
-        elif message.text == '2':
-            echo(bot, '798821507', 'Nome do evento que deseja editar:\n')
-            
-        elif message.text == '3':
-            echo(bot, '798821507', 'Nome do evento que deseja apagar:\n')
-            
-        elif message.text == '4':
-            echo(bot, '798821507', 'Nome do novo evento:\n')
+def start(update, context):
+	print("RODOUUU RODADO IMPO")
+	update.message.reply_text('Funciona')
+	job = context.job
+	context.bot.send_message(job.context, text='Beep!')
 
-def consulta(nomeEvento):
+def main():
+    """Run bot."""
+    # Create the Updater and pass it your bot's token.
+    # Make sure to set use_context=True to use the new context based callbacks
+    # Post version 12 this will no longer be necessary
+    updater = Updater('625881619:AAFkDG8Fw8btJxVzWyz-GCru3nrT7gXYvfc',user_sig_handler=True)
 
-botMensagem.polling()
+    # Get the dispatcher to register handlers
+    dp = updater.dispatcher
+
+    # on different commands - answer in Telegram
+    dp.add_handler(CommandHandler("start", start))
+
+    # dp.add_error_handler(error)
+
+    updater.start_polling()
+    print("RODOUUU RODADO")
+
+    updater.idle()
+
+
+# botMensagem.polling()
+
+if __name__ == '__main__':
+	main()
