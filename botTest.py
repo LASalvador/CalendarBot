@@ -3,6 +3,7 @@ from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters, Rege
                           ConversationHandler)
 
 import logging
+from quickstart import selecionarUmEvento, criaEvento, alterarEvento, deletarEvento
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -33,11 +34,12 @@ def acao(bot, update):
     acao = update.message.text
 
     if(acao == 'Criar'):
-        update.message.reply_text('Digite as informações do evento que deseja criar',
+        update.message.reply_text('Digite as informações do evento que deseja criar no formato:\n' 
+                                  'nome, ano , mês , dia, horaInicio, minutosInicio, horaFinal, MinutoFinal'  ,
                                reply_markup=ReplyKeyboardRemove())
         return CRIAR
     elif (acao == 'Consultar'):
-        update.message.reply_text('Digite as informações do evento que deseja consultar',
+        update.message.reply_text('Digite o nome do evento que deseja consultar',
                                reply_markup=ReplyKeyboardRemove())
         return CONSULTAR
     elif (acao == 'Alterar'):
@@ -45,7 +47,7 @@ def acao(bot, update):
                                reply_markup=ReplyKeyboardRemove())
         return ALTERAR
     elif (acao == 'Deletar'):
-        update.message.reply_text('Digite as informações do evento que deseja deletar',
+        update.message.reply_text('Digite o nome do evento que deseja deletar',
                                reply_markup=ReplyKeyboardRemove())
         return DELETAR
 
@@ -56,14 +58,18 @@ def acao(bot, update):
 def criar(bot, update):
     user = update.message.from_user
     logger.info("Criar %s: %s", user.first_name, update.message.text)
-    update.message.reply_text('O usuário deseja criar um evento.')
+    evento = update.message.text
+    evento = evento.split(',')
 
+    link = criaEvento(evento[0],int(evento[1]),int(evento[2]),int(evento[3]),int(evento[4]),int(evento[5]),int(evento[6]),int(evento[7]))
+    update.message.reply_text(link)
     return ConversationHandler.END
 
 def consultar(bot, update):
     user = update.message.from_user
     logger.info("Consultar %s: %s", user.first_name, update.message.text)
-    update.message.reply_text('O usuário deseja consultar um evento.')
+    event = selecionarUmEvento(update.message.text)
+    update.message.reply_text(event)    
 
     return ConversationHandler.END
 
@@ -77,8 +83,8 @@ def alterar(bot, update):
 def deletar(bot, update):
     user = update.message.from_user
     logger.info("Criar %s: %s", user.first_name, update.message.text)
-    update.message.reply_text('O usuário deseja deletar um evento.')
-
+    deletarEvento(update.message.text)
+    update.message.reply_text('Evento excluído')
     return ConversationHandler.END
 
 
@@ -89,6 +95,7 @@ def cancel(bot, update):
                               reply_markup=ReplyKeyboardRemove())
 
     return ConversationHandler.END
+
 
 
 def error(bot, update, error):

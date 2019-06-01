@@ -96,7 +96,9 @@ def selecionarUmEvento(eventName):
     events = service.events().list(calendarId='primary').execute()
     for event in events['items']:
         if event['summary'] == eventName:
-            return event
+            start = event['start'].get('dateTime', event['start'].get('date'))
+            evento = start + "|" + event['summary']
+            return evento
     return None
     
 
@@ -125,3 +127,7 @@ def configurarCred(scope):
 #import datetime
 #b = datetimee.datetime(2017, 11, 28, 23, 55, 59, 342380)
 #data = b.isoformat()   
+
+
+# evento = selecionarUmEvento("Listas POO")
+# print(evento)
