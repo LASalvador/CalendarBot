@@ -21,7 +21,7 @@ def start(bot, update):
         'O que deseja fazer',
         reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True))
 
-    return ACAO
+    return MAPEAR_ACAO
 
 
 def acao(bot, update):
@@ -81,7 +81,7 @@ def deletar(bot, update):
 
     return ConversationHandler.END
 
-    
+
 def cancel(bot, update):
     user = update.message.from_user
     logger.info("User %s canceled the conversation.", user.first_name)
@@ -103,8 +103,6 @@ def main():
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
 
-
-    MAPEAR_ACAO, CRIAR, CONSULTAR, ALTERAR, DELETAR, CANCELAR = range(6)
     # Add conversation handler with the states GENDER, PHOTO, LOCATION and BIO
     conv_handler = ConversationHandler(
         entry_points=[CommandHandler('start', start)],
@@ -133,6 +131,7 @@ def main():
     # log all errors
     dp.add_error_handler(error)
 
+    print("Bot rodando")
     # Start the Bot
     updater.start_polling()
 
